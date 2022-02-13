@@ -15,6 +15,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.+'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.+'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.+'
+    implementation 'org.jetbrains:annotations:15.0'
 }
 
 test {
@@ -28,4 +29,11 @@ javafx {
     modules= ['javafx.controls','javafx.fxml']
     version = '11.0.2'
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+}
+
 mainClassName ='Main'

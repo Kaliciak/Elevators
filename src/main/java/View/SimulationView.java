@@ -1,6 +1,6 @@
 package View;
 
-import Model.ElevatorState;
+import Model.ElevatorState.ElevatorState;
 import ViewModel.SimulationViewModel;
 import ViewModel.SimulationViewModelImpl;
 import javafx.event.ActionEvent;
@@ -31,7 +31,7 @@ public class SimulationView {
             VBox newBox = new VBox();
 
             for(int floor = 0; floor < floorsCount; floor ++) {
-                elevatorCanvas[elevator][floor] = new Canvas(100, 50);
+                elevatorCanvas[elevator][floor] = new Canvas(100, 55);
                 VBox.setVgrow(elevatorCanvas[elevator][floor], Priority.ALWAYS);
                 newBox.getChildren().add(elevatorCanvas[elevator][floor]);
             }
@@ -45,8 +45,8 @@ public class SimulationView {
 
     @FXML
     void simulationStep(ActionEvent event) {
+        viewModel.step();
         redraw();
-        System.out.println("PRESSSS");
     }
 
     private void redraw() {
@@ -69,9 +69,6 @@ public class SimulationView {
     }
 
     private int getFloorIndex(int floor) {
-        // 5 -> 0
-        // -2 -> 7
-        // x -> 5 - x
         return 5 - floor;
     }
 }
