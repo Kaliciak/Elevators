@@ -17,7 +17,7 @@ public class TargetListImpl implements TargetList {
 
     @Override
     public void remove(int floor) {
-        list.remove(floor);
+        list.remove((Integer) floor);
     }
 
     @Override

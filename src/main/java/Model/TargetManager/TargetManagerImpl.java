@@ -2,6 +2,7 @@ package Model.TargetManager;
 
 import Model.Direction;
 import Model.Elevator.Elevator;
+import Model.Fabrics.SystemFabric;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -88,8 +89,10 @@ public class TargetManagerImpl implements TargetManager {
         int currentFloor = elevator.getState().getFloor();
         int id = elevator.getState().getID();
 
-        toSpecificTarget[id] = (specificTargets[id].getClosestAbove(currentFloor) == target ||
-                specificTargets[id].getClosestBelow(currentFloor) == target);
+        toSpecificTarget[id] = ((specificTargets[id].getClosestAbove(currentFloor) != null &&
+                specificTargets[id].getClosestAbove(currentFloor) == target) ||
+                (specificTargets[id].getClosestBelow(currentFloor) != null &&
+                specificTargets[id].getClosestBelow(currentFloor) == target));
 
         specificTargets[id].remove(target);
         generalTargetsUp.remove(target);
@@ -185,21 +188,27 @@ public class TargetManagerImpl implements TargetManager {
     }
 
     private void swapTargets(Elevator elevator, int newTarget, boolean isSpecific) {
-        int oldTarget = elevator.getState().getTarget();
+        Integer oldTarget = elevator.getState().getTarget();
         int id = elevator.getState().getID();
         int currentFloor = elevator.getState().getFloor();
+
         elevator.setTarget(newTarget);
+        toSpecificTarget[id] = isSpecific;
+
+        if(oldTarget == null) {
+            return;
+        }
+
         if(toSpecificTarget[id]) {
             specificTargets[id].add(oldTarget);
         }
         else {
-            if(oldTarget > currentFloor) {
+            if(elevator.getDirection() == Direction.UP) {
                 generalTargetsUp.add(oldTarget);
             }
-            else {
+            else if(elevator.getDirection() == Direction.DOWN) {
                 generalTargetsDown.add(oldTarget);
             }
         }
-        toSpecificTarget[id] = isSpecific;
     }
 }

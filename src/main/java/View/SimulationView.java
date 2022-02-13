@@ -1,6 +1,8 @@
 package View;
 
+import Model.Direction;
 import Model.ElevatorState.ElevatorState;
+import Model.Fabrics.SystemFabric;
 import ViewModel.SimulationViewModel;
 import ViewModel.SimulationViewModelImpl;
 import javafx.event.ActionEvent;
@@ -11,6 +13,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+
+import static javafx.scene.text.Font.font;
 
 public class SimulationView {
     private SimulationViewModel viewModel;
@@ -20,6 +25,9 @@ public class SimulationView {
     private Canvas[][] elevatorCanvas = new Canvas[elevatorsCount][floorsCount];
 
     @FXML
+    private VBox floorsVBox;
+
+    @FXML
     private HBox elevatorHBox;
 
     @FXML
@@ -27,6 +35,51 @@ public class SimulationView {
         // TODO: inject class
         viewModel = new SimulationViewModelImpl();
 
+        fillFloorsPane();
+        fillElevatorsPane();
+        redraw();
+    }
+
+    @FXML
+    void simulationStep(ActionEvent event) {
+        viewModel.step();
+        redraw();
+    }
+
+    private void requestUp(ActionEvent event) {
+        IndexedButton button = (IndexedButton) event.getTarget();
+        viewModel.pressedFloorButton(button.id, Direction.UP);
+    }
+
+    private void requestDown(ActionEvent event) {
+        IndexedButton button = (IndexedButton) event.getTarget();
+        viewModel.pressedFloorButton(button.id, Direction.DOWN);
+    }
+
+    private void fillFloorsPane() {
+        for(int i = 0; i < floorsCount; i ++) {
+            HBox floorBox = new HBox();
+
+            Text floorText = new Text(Integer.toString(5 - i));
+            floorText.setFont(font(floorText.getFont().getFamily(), 12));
+            HBox.setHgrow(floorText, Priority.ALWAYS);
+            floorBox.getChildren().add(floorText);
+
+            IndexedButton upButton = new IndexedButton("UP", i);
+            upButton.setOnAction(this::requestUp);
+            HBox.setHgrow(upButton, Priority.ALWAYS);
+            floorBox.getChildren().add(upButton);
+
+            IndexedButton downButton = new IndexedButton("DOWN", i);
+            downButton.setOnAction(this::requestDown);
+            HBox.setHgrow(downButton, Priority.ALWAYS);
+            floorBox.getChildren().add(downButton);
+
+            floorsVBox.getChildren().add(floorBox);
+        }
+    }
+
+    private void fillElevatorsPane() {
         for(int elevator = 0; elevator < elevatorsCount; elevator ++) {
             VBox newBox = new VBox();
 
@@ -39,14 +92,6 @@ public class SimulationView {
             HBox.setHgrow(newBox, Priority.ALWAYS);
             elevatorHBox.getChildren().add(newBox);
         }
-
-        redraw();
-    }
-
-    @FXML
-    void simulationStep(ActionEvent event) {
-        viewModel.step();
-        redraw();
     }
 
     private void redraw() {
@@ -68,6 +113,7 @@ public class SimulationView {
         }
     }
 
+    //TODO: Move to viewModel
     private int getFloorIndex(int floor) {
         return 5 - floor;
     }

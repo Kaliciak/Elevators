@@ -16,19 +16,8 @@
          </font>
       </Text>
       <Button layoutX="44.0" layoutY="18.0" mnemonicParsing="false" onAction="#simulationStep" prefHeight="26.0" prefWidth="126.0" text="Step" />
-      <VBox layoutX="44.0" layoutY="70.0" prefHeight="424.0" prefWidth="12.0" spacing="40.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="5" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="4" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="3" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="2" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="1" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="-1" textAlignment="CENTER" wrappingWidth="30.0" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="-2" textAlignment="CENTER" wrappingWidth="30.0" />
-         </children>
-      </VBox>
-      <ScrollPane layoutX="147.0" layoutY="60.0" prefHeight="450.0" prefWidth="683.0">
+      <VBox fx:id="floorsVBox" layoutX="20.0" layoutY="70.0" prefHeight="440.0" prefWidth="134.0" spacing="30.0" />
+      <ScrollPane layoutX="185.0" layoutY="60.0" prefHeight="450.0" prefWidth="645.0">
          <content>
             <HBox fx:id="elevatorHBox" prefHeight="446.0" prefWidth="293.0" />
          </content>

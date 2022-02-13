@@ -1,5 +1,6 @@
 package ViewModel;
 
+import Model.Direction;
 import Model.ElevatorState.ElevatorState;
 import Model.ElevatorSystem.ElevatorSystem;
 import Model.Fabrics.SystemFabric;
@@ -22,5 +23,10 @@ public class SimulationViewModelImpl implements SimulationViewModel {
     @Override
     public void step() {
         elevatorSystem.step();
+    }
+
+    @Override
+    public void pressedFloorButton(int id, Direction direction) {
+        elevatorSystem.generalRequest(5 - id, direction);
     }
 }
