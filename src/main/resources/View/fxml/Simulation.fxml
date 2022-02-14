@@ -8,19 +8,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="860.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.SimulationView">
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="860.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.Simulation.SimulationView">
    <children>
-      <Text layoutX="9.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Elevators" textAlignment="CENTER" wrappingWidth="859.9999999999999" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="-8.999999999999886">
+      <Text layoutX="9.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Simulation" textAlignment="CENTER" wrappingWidth="859.9999999999999" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="-8.999999999999886">
          <font>
             <Font size="23.0" />
          </font>
       </Text>
-      <Button layoutX="44.0" layoutY="18.0" mnemonicParsing="false" onAction="#simulationStep" prefHeight="26.0" prefWidth="126.0" text="Step" />
+      <Button layoutX="693.0" layoutY="18.0" mnemonicParsing="false" onAction="#simulationStep" prefHeight="26.0" prefWidth="126.0" text="Step" />
       <VBox fx:id="floorsVBox" layoutX="20.0" layoutY="70.0" prefHeight="440.0" prefWidth="134.0" spacing="30.0" />
       <ScrollPane layoutX="185.0" layoutY="60.0" prefHeight="450.0" prefWidth="645.0">
          <content>
             <HBox fx:id="elevatorHBox" prefHeight="446.0" prefWidth="10.0" />
          </content>
       </ScrollPane>
+      <Button layoutX="35.0" layoutY="19.0" mnemonicParsing="false" onAction="#goBack" prefHeight="26.0" prefWidth="46.0" text="Back" />
    </children>
 </AnchorPane>

@@ -1,14 +1,17 @@
-package View;
+package View.Simulation;
 
 import Model.Direction;
-import Model.Elevator.Elevator;
 import Model.ElevatorState.ElevatorState;
 import Model.ElevatorState.Target;
-import ViewModel.SimulationViewModel;
-import ViewModel.SimulationViewModelImpl;
+import View.IndexedButton;
+import View.IndexedCanvas;
+import View.Menu.MenuView;
+import ViewModel.Simulation.SimulationViewModel;
+import ViewModel.Simulation.SimulationViewModelImpl;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -24,10 +27,13 @@ public class SimulationView {
     private SimulationViewModel viewModel;
 
     private int floorsCount = 8;
-    private int elevatorsCount = 5;
-    private IndexedButton[] buttonsUp = new IndexedButton[floorsCount];
-    private IndexedButton[] buttonsDown = new IndexedButton[floorsCount];
-    private IndexedCanvas[][] elevatorCanvas = new IndexedCanvas[elevatorsCount][floorsCount];
+    private int elevatorsCount;
+    private IndexedButton[] buttonsUp;
+    private IndexedButton[] buttonsDown;
+    private IndexedCanvas[][] elevatorCanvas;
+
+    @FXML
+    private AnchorPane mainPane;
 
     @FXML
     private VBox floorsVBox;
@@ -35,10 +41,16 @@ public class SimulationView {
     @FXML
     private HBox elevatorHBox;
 
-    @FXML
-    void initialize() {
+    public void initialize(int elevatorsCount) {
+        System.out.println("ARG");
+        this.elevatorsCount = elevatorsCount;
+
+        buttonsUp = new IndexedButton[floorsCount];
+        buttonsDown = new IndexedButton[floorsCount];
+        elevatorCanvas = new IndexedCanvas[elevatorsCount][floorsCount];
+
         // TODO: inject class
-        viewModel = new SimulationViewModelImpl();
+        viewModel = new SimulationViewModelImpl(elevatorsCount);
 
         fillFloorsPane();
         fillElevatorsPane();
@@ -169,6 +181,21 @@ public class SimulationView {
         }
         else {
             canvas.fill(Color.LIGHTGREEN);
+        }
+    }
+
+
+    @FXML
+    void goBack(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/fxml/Menu.fxml"));
+            Parent root = loader.load();
+            MenuView menuView = loader.getController();
+            menuView.initialize(elevatorsCount);
+
+            mainPane.getScene().setRoot(root);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

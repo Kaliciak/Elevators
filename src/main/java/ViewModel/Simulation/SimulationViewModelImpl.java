@@ -1,7 +1,6 @@
-package ViewModel;
+package ViewModel.Simulation;
 
 import Model.Direction;
-import Model.Elevator.Elevator;
 import Model.ElevatorState.ElevatorState;
 import Model.ElevatorState.ElevatorStateImpl;
 import Model.ElevatorState.Target;
@@ -10,7 +9,6 @@ import Model.ElevatorSystem.ElevatorSystem;
 import Model.Fabrics.SystemFabric;
 import Model.Fabrics.SystemFabricImpl;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +17,9 @@ public class SimulationViewModelImpl implements SimulationViewModel {
     // TODO: injection
     private ElevatorSystem elevatorSystem;
 
-    public SimulationViewModelImpl() {
+    public SimulationViewModelImpl(int elevatorsCount) {
         SystemFabric systemFabric = new SystemFabricImpl();
-        elevatorSystem = systemFabric.createElevatorSystem(5);
+        elevatorSystem = systemFabric.createElevatorSystem(elevatorsCount);
     }
 
     @Override

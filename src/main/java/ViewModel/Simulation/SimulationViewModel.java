@@ -1,4 +1,4 @@
-package ViewModel;
+package ViewModel.Simulation;
 
 import Model.Direction;
 import Model.ElevatorState.ElevatorState;

@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 
 public class IndexedCanvas extends Canvas {
-    int elevator, floor;
+    public int elevator, floor;
 
     public IndexedCanvas(double width, double height, int elevator, int floor) {
         super(width, height);
