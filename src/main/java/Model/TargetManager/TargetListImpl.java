@@ -37,4 +37,9 @@ public class TargetListImpl implements TargetList {
         }
         return found.get();
     }
+
+    @Override
+    public List<Integer> getAll() {
+        return list;
+    }
 }

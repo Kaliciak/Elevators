@@ -6,6 +6,7 @@ import Model.Fabrics.SystemFabric;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class TargetManagerImpl implements TargetManager {
@@ -185,6 +186,22 @@ public class TargetManagerImpl implements TargetManager {
         else {
             specificTargets[elevatorID].add(floor);
         }
+    }
+
+    @Override
+    public List<Integer> getGeneralTargets(Direction direction) {
+        switch (direction) {
+            case UP:
+                return generalTargetsUp.getAll();
+            case DOWN:
+                return generalTargetsDown.getAll();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Integer> getSpecificTargets(int elevatorId) {
+        return specificTargets[elevatorId].getAll();
     }
 
     private void swapTargets(Elevator elevator, int newTarget, boolean isSpecific) {

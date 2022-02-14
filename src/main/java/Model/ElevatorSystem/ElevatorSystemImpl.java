@@ -6,6 +6,7 @@ import Model.ElevatorState.ElevatorState;
 import Model.TargetManager.TargetManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ElevatorSystemImpl implements ElevatorSystem {
     private int elevatorsCount;
@@ -34,6 +35,16 @@ public class ElevatorSystemImpl implements ElevatorSystem {
         for(Elevator elevator: elevators) {
             elevator.step();
         }
+    }
+
+    @Override
+    public List<Integer> getGeneralTargets(Direction direction) {
+        return targetManager.getGeneralTargets(direction);
+    }
+
+    @Override
+    public List<Integer> getSpecificTargets(int elevatorId) {
+        return targetManager.getSpecificTargets(elevatorId);
     }
 
     @Override
