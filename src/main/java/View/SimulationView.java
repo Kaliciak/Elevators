@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -22,7 +23,7 @@ public class SimulationView {
 
     private int floorsCount = 8;
     private int elevatorsCount = 5;
-    private Canvas[][] elevatorCanvas = new Canvas[elevatorsCount][floorsCount];
+    private IndexedCanvas[][] elevatorCanvas = new IndexedCanvas[elevatorsCount][floorsCount];
 
     @FXML
     private VBox floorsVBox;
@@ -79,12 +80,18 @@ public class SimulationView {
         }
     }
 
+    private void specificRequest(MouseEvent event) {
+        IndexedCanvas canvas = (IndexedCanvas) event.getTarget();
+        viewModel.pressedElevatorCanvas(canvas.elevator, canvas.floor);
+    }
+
     private void fillElevatorsPane() {
         for(int elevator = 0; elevator < elevatorsCount; elevator ++) {
             VBox newBox = new VBox();
 
             for(int floor = 0; floor < floorsCount; floor ++) {
-                elevatorCanvas[elevator][floor] = new Canvas(100, 55);
+                elevatorCanvas[elevator][floor] = new IndexedCanvas(40, 55, elevator, floor);
+                elevatorCanvas[elevator][floor].setOnMouseClicked(this::specificRequest);
                 VBox.setVgrow(elevatorCanvas[elevator][floor], Priority.ALWAYS);
                 newBox.getChildren().add(elevatorCanvas[elevator][floor]);
             }
@@ -99,9 +106,11 @@ public class SimulationView {
 
         for(int elevator = 0; elevator < elevatorsCount; elevator ++) {
             for(int floor = 0; floor < floorsCount; floor ++) {
+                GraphicsContext gc = elevatorCanvas[elevator][floor].getGraphicsContext2D();
                 double height = elevatorCanvas[elevator][floor].getHeight();
                 double width = elevatorCanvas[elevator][floor].getWidth();
-                elevatorCanvas[elevator][floor].getGraphicsContext2D().clearRect(0,0, width, height);
+                gc.setFill(Color.ORANGE);
+                gc.fillRect(0,0, width - 2, height - 2);
             }
         }
 

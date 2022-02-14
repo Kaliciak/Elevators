@@ -29,4 +29,9 @@ public class SimulationViewModelImpl implements SimulationViewModel {
     public void pressedFloorButton(int id, Direction direction) {
         elevatorSystem.generalRequest(5 - id, direction);
     }
+
+    @Override
+    public void pressedElevatorCanvas(int elevator, int floor) {
+        elevatorSystem.specificRequest(5 - floor, elevator);
+    }
 }
