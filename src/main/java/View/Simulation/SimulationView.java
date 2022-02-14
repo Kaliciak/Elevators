@@ -26,7 +26,8 @@ import static javafx.scene.text.Font.font;
 public class SimulationView {
     private SimulationViewModel viewModel;
 
-    private int floorsCount = 8;
+    private int maxFloor;
+    private int floorsCount;
     private int elevatorsCount;
     private IndexedButton[] buttonsUp;
     private IndexedButton[] buttonsDown;
@@ -41,16 +42,17 @@ public class SimulationView {
     @FXML
     private HBox elevatorHBox;
 
-    public void initialize(int elevatorsCount) {
-        System.out.println("ARG");
+    public void initialize(int elevatorsCount, int maxFloor, int minFloor) {
         this.elevatorsCount = elevatorsCount;
+        this.maxFloor = maxFloor;
+        this.floorsCount = maxFloor - minFloor + 1;
 
         buttonsUp = new IndexedButton[floorsCount];
         buttonsDown = new IndexedButton[floorsCount];
         elevatorCanvas = new IndexedCanvas[elevatorsCount][floorsCount];
 
         // TODO: inject class
-        viewModel = new SimulationViewModelImpl(elevatorsCount);
+        viewModel = new SimulationViewModelImpl(elevatorsCount, maxFloor, floorsCount);
 
         fillFloorsPane();
         fillElevatorsPane();
@@ -85,7 +87,7 @@ public class SimulationView {
         for(int i = 0; i < floorsCount; i ++) {
             HBox floorBox = new HBox();
 
-            Text floorText = new Text(Integer.toString(5 - i));
+            Text floorText = new Text(Integer.toString(maxFloor - i));
             floorText.setFont(font(floorText.getFont().getFamily(), 12));
             HBox.setHgrow(floorText, Priority.ALWAYS);
             floorBox.getChildren().add(floorText);

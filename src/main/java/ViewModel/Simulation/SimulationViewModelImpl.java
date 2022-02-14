@@ -16,9 +16,11 @@ import java.util.stream.Collectors;
 public class SimulationViewModelImpl implements SimulationViewModel {
     // TODO: injection
     private ElevatorSystem elevatorSystem;
+    private int maxFloor;
 
-    public SimulationViewModelImpl(int elevatorsCount) {
+    public SimulationViewModelImpl(int elevatorsCount, int maxFloor, int floorsCount) {
         SystemFabric systemFabric = new SystemFabricImpl();
+        this.maxFloor = maxFloor;
         elevatorSystem = systemFabric.createElevatorSystem(elevatorsCount);
     }
 
@@ -36,12 +38,12 @@ public class SimulationViewModelImpl implements SimulationViewModel {
 
     @Override
     public void pressedFloorButton(int id, Direction direction) {
-        elevatorSystem.generalRequest(5 - id, direction);
+        elevatorSystem.generalRequest(getFloorIndex(id), direction);
     }
 
     @Override
     public void pressedElevatorCanvas(int elevator, int floor) {
-        elevatorSystem.specificRequest(5 - floor, elevator);
+        elevatorSystem.specificRequest(getFloorIndex(floor), elevator);
     }
 
     //TODO: translate floor number to floor id
@@ -56,7 +58,7 @@ public class SimulationViewModelImpl implements SimulationViewModel {
     }
 
     private Integer getFloorIndex(Integer floor) {
-        return (floor == null) ? null : 5 - floor;
+        return (floor == null) ? null : maxFloor - floor;
     }
 
     private ElevatorState toIndexedFloorState(ElevatorState state) {
