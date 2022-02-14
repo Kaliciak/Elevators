@@ -4,6 +4,8 @@ import Model.Direction;
 import Model.Elevator.Elevator;
 import Model.ElevatorState.ElevatorState;
 import Model.ElevatorState.ElevatorStateImpl;
+import Model.ElevatorState.Target;
+import Model.ElevatorState.TargetImpl;
 import Model.ElevatorSystem.ElevatorSystem;
 import Model.Fabrics.SystemFabric;
 import Model.Fabrics.SystemFabricImpl;
@@ -60,6 +62,11 @@ public class SimulationViewModelImpl implements SimulationViewModel {
     }
 
     private ElevatorState toIndexedFloorState(ElevatorState state) {
-        return new ElevatorStateImpl(state.getID(), getFloorIndex(state.getFloor()), getFloorIndex(state.getTarget()));
+        TargetImpl newTarget = null;
+        Target oldTarget = state.getTarget();
+        if(oldTarget != null) {
+            newTarget = new TargetImpl(getFloorIndex(oldTarget.getFloor()), oldTarget.isSpecific(), oldTarget.isUp(), oldTarget.isDown());
+        }
+        return new ElevatorStateImpl(state.getID(), getFloorIndex(state.getFloor()), newTarget);
     }
 }

@@ -3,6 +3,7 @@ package Model.Elevator;
 import Model.Direction;
 import Model.ElevatorState.ElevatorState;
 import Model.ElevatorState.MutableElevatorState;
+import Model.ElevatorState.Target;
 import Model.TargetManager.TargetManagerDelegate;
 
 public class ElevatorImpl implements Elevator {
@@ -25,8 +26,8 @@ public class ElevatorImpl implements Elevator {
     }
 
     @Override
-    public void setTarget(Integer floor) {
-        state.setTarget(floor);
+    public void setTarget(Target target) {
+        state.setTarget(target);
     }
 
     @Override
@@ -42,18 +43,18 @@ public class ElevatorImpl implements Elevator {
             }
 
             // if at target
-            else if(state.getTarget() == state.getFloor()) {
+            else if(state.getTarget().getFloor() == state.getFloor()) {
                 state.setDoorOpen(true);
             }
 
             // if target is above
-            else if(state.getTarget() > state.getFloor()) {
+            else if(state.getTarget().getFloor() > state.getFloor()) {
                 state.setFloor(state.getFloor() + 1);
                 direction = Direction.UP;
             }
 
             // if target is below
-            else if(state.getTarget() < state.getFloor()) {
+            else if(state.getTarget().getFloor() < state.getFloor()) {
                 state.setFloor(state.getFloor() - 1);
                 direction = Direction.DOWN;
             }

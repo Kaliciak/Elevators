@@ -3,6 +3,7 @@ package View;
 import Model.Direction;
 import Model.Elevator.Elevator;
 import Model.ElevatorState.ElevatorState;
+import Model.ElevatorState.Target;
 import ViewModel.SimulationViewModel;
 import ViewModel.SimulationViewModelImpl;
 import javafx.event.ActionEvent;
@@ -144,12 +145,12 @@ public class SimulationView {
     private void drawTargets() {
         for(ElevatorState state: viewModel.getElevatorStates()) {
             int id = state.getID();
-            Integer floor = state.getTarget();
-            if(floor == null) {
-                return;
+            Target target = state.getTarget();
+            if(target == null) {
+                continue;
             }
 
-            elevatorCanvas[id][floor].fill(Color.RED);
+            elevatorCanvas[id][target.getFloor()].fill(Color.RED);
         }
     }
 

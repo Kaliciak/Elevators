@@ -3,6 +3,6 @@ package Model.ElevatorState;
 public interface ElevatorState {
     int getID();
     int getFloor();
-    Integer getTarget();
+    Target getTarget();
     boolean isDoorOpen();
 }

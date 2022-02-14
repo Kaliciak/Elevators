@@ -2,6 +2,8 @@ package Model.TargetManager;
 
 import Model.Direction;
 import Model.Elevator.Elevator;
+import Model.ElevatorState.Target;
+import Model.ElevatorState.TargetImpl;
 import Model.Fabrics.SystemFabric;
 
 import java.lang.reflect.Array;
@@ -11,7 +13,6 @@ import java.util.Optional;
 
 public class TargetManagerImpl implements TargetManager {
     private Elevator[] elevators;
-    private boolean[] toSpecificTarget;
     private TargetList[] specificTargets;
     private TargetList generalTargetsUp;
     private TargetList generalTargetsDown;
@@ -21,7 +22,6 @@ public class TargetManagerImpl implements TargetManager {
         int elevatorsCount = elevators.length;
 
         //TODO: use fabric
-        toSpecificTarget = new boolean[elevatorsCount];
         specificTargets = new TargetListImpl[elevatorsCount];
         for(int i = 0; i < elevatorsCount; i ++) {
             specificTargets[i] = new TargetListImpl();
@@ -34,8 +34,9 @@ public class TargetManagerImpl implements TargetManager {
     public void achievedTarget(int id) {
         Elevator elevator = elevators[id];
         Direction direction = elevator.getDirection();
+        Target oldTarget = elevator.getState().getTarget();
 
-        Integer closestTarget = getClosestTarget(elevator, direction);
+        Target closestTarget = getClosestTarget(elevator, direction);
         if(closestTarget != null) {
             setNextTarget(elevator, closestTarget);
         }
@@ -51,53 +52,77 @@ public class TargetManagerImpl implements TargetManager {
             }
         }
 
+        uncheckTarget(elevator);
+
     }
 
-    private Integer getClosestTarget(Elevator elevator, Direction direction) {
+    private void uncheckTarget(Elevator elevator) {
         int currentFloor = elevator.getState().getFloor();
-        Integer generalTarget = null, specificTarget = null;
+        Target newTarget = elevator.getState().getTarget();
+
+        specificTargets[elevator.getState().getID()].remove(currentFloor);
+
+        if(newTarget == null) {
+            generalTargetsUp.remove(currentFloor);
+            generalTargetsDown.remove(currentFloor);
+        }
+    }
+
+    private Target getClosestTarget(Elevator elevator, Direction direction) {
+        int currentFloor = elevator.getState().getFloor();
+        Integer generalTarget = null, specificTarget = null, alternativeTarget = null;
         int id = elevator.getState().getID();
 
         if(direction == Direction.UP) {
             generalTarget = generalTargetsUp.getClosestAbove(currentFloor);
+            alternativeTarget = generalTargetsDown.getClosestAbove(currentFloor);
             specificTarget = specificTargets[id].getClosestAbove(currentFloor);
         }
         else if(direction == Direction.DOWN) {
             generalTarget = generalTargetsDown.getClosestBelow(currentFloor);
+            alternativeTarget = generalTargetsUp.getClosestBelow(currentFloor);
             specificTarget = specificTargets[id].getClosestBelow(currentFloor);
         }
 
         if(generalTarget != null && specificTarget != null) {
-            if(isFurther(elevator, generalTarget, specificTarget)) {
-                return specificTarget;
+            int further = isFurther(elevator, generalTarget, specificTarget);
+            if(further < 0) {
+                return new TargetImpl(generalTarget, false, direction == Direction.UP, direction == Direction.DOWN);
+            }
+            else if(further == 0) {
+                return new TargetImpl(generalTarget, true, direction == Direction.UP, direction == Direction.DOWN);
             }
             else {
-                return generalTarget;
+                return new TargetImpl(specificTarget, true, false, false);
             }
         }
         else if(generalTarget == null && specificTarget != null) {
-            return specificTarget;
+            return new TargetImpl(specificTarget, true, false, false);
         }
         else if(generalTarget != null && specificTarget == null) {
-            return generalTarget;
+            return new TargetImpl(generalTarget, false, direction == Direction.UP, direction == Direction.DOWN);
+        }
+        else if(alternativeTarget != null) {
+            return new TargetImpl(alternativeTarget, false, direction != Direction.UP, direction != Direction.DOWN);
         }
         else {
             return null;
         }
     }
 
-    private void setNextTarget(Elevator elevator, int target) {
-        int currentFloor = elevator.getState().getFloor();
+    private void setNextTarget(Elevator elevator, Target target) {
         int id = elevator.getState().getID();
+        int floor = target.getFloor();
 
-        toSpecificTarget[id] = ((specificTargets[id].getClosestAbove(currentFloor) != null &&
-                specificTargets[id].getClosestAbove(currentFloor) == target) ||
-                (specificTargets[id].getClosestBelow(currentFloor) != null &&
-                specificTargets[id].getClosestBelow(currentFloor) == target));
-
-        specificTargets[id].remove(target);
-        generalTargetsUp.remove(target);
-        generalTargetsDown.remove(target);
+        if(target.isSpecific()) {
+            specificTargets[id].remove(floor);
+        }
+        if(target.isUp()) {
+            generalTargetsUp.remove(floor);
+        }
+        if(target.isDown()) {
+            generalTargetsDown.remove(floor);
+        }
 
         elevator.setTarget(target);
     }
@@ -112,18 +137,21 @@ public class TargetManagerImpl implements TargetManager {
             switch (direction) {
                 case UP:
                     generalTargetsUp.add(floor);
+                    break;
                 case DOWN:
                     generalTargetsDown.add(floor);
+                    break;
             }
         }
         else {
             Elevator elevator = optionalElevator.get();
-            swapTargets(elevator, floor, false);
+            swapTargets(elevator, new TargetImpl(floor, false, direction == Direction.UP, direction == Direction.DOWN));
         }
     }
 
     private static boolean directionFilter(Elevator elevator, Direction direction, int target) {
-        Integer currentTarget = elevator.getState().getTarget();
+        Target currentTarget = elevator.getState().getTarget();
+        Integer targetFloor = currentTarget == null ? null : currentTarget.getFloor();
         int currentFloor = elevator.getState().getFloor();
 
         // if elevator is waiting
@@ -133,12 +161,12 @@ public class TargetManagerImpl implements TargetManager {
 
         if(elevator.getDirection() == direction) {
             if(direction == Direction.UP) {
-                if(currentTarget > target && target > currentFloor) {
+                if(targetFloor > target && target > currentFloor) {
                     return true;
                 }
             }
             else if(direction == Direction.DOWN) {
-                if(currentTarget < target && target < currentFloor) {
+                if(targetFloor < target && target < currentFloor) {
                     return true;
                 }
             }
@@ -147,17 +175,20 @@ public class TargetManagerImpl implements TargetManager {
         return false;
     }
 
-    private static boolean isFurther(Elevator elevator, int firstTarget, int secondTarget) {
+    // < 0 -- second is further than first
+    // == 0 -- both within the same distance
+    // > 0 -- second is closer than first
+    private static int isFurther(Elevator elevator, int firstTarget, int secondTarget) {
         int firstDistance = Math.abs(elevator.getState().getFloor() - firstTarget);
         int secondDistance = Math.abs(elevator.getState().getFloor() - secondTarget);
-        return firstDistance > secondDistance;
+        return firstDistance - secondDistance;
     }
 
     private static int distanceComparator(Elevator eA, Elevator eB, int target) {
-        if(eA.getState().getTarget() == null) {
+        if(eA.getState().getTarget() == null && eB.getState().getTarget() != null) {
             return -1;
         }
-        if(eB.getState().getTarget() == null) {
+        if(eA.getState().getTarget() != null && eB.getState().getTarget() == null) {
             return 1;
         }
         int aDistance = Math.abs(eA.getState().getFloor() - target);
@@ -168,20 +199,21 @@ public class TargetManagerImpl implements TargetManager {
     @Override
     public void specificRequest(int floor, int elevatorID) {
         Elevator elevator = elevators[elevatorID];
-        Integer currentTarget = elevator.getState().getTarget();
+        Target currentTarget = elevator.getState().getTarget();
+        Integer targetFloor = currentTarget == null ? null : currentTarget.getFloor();
         int currentFloor = elevator.getState().getFloor();
 
         if(currentTarget == null) {
-            elevator.setTarget(floor);
+            elevator.setTarget(new TargetImpl(floor, true, false, false));
         }
-        else if(currentTarget == currentFloor) {
-            return;
+        else if(targetFloor == currentFloor) {
+            elevator.setTarget(new TargetImpl(floor, true, false, false));;
         }
         // if target <- new <- floor
         // if floor -> new -> target
-        else if((currentTarget > floor && floor > currentFloor) ||
-                (currentTarget < floor && floor < currentFloor)) {
-            swapTargets(elevator, floor, true);
+        else if((targetFloor > floor && floor > currentFloor) ||
+                (targetFloor < floor && floor < currentFloor)) {
+            swapTargets(elevator, new TargetImpl(floor, true, false, false));
         }
         else {
             specificTargets[elevatorID].add(floor);
@@ -204,28 +236,28 @@ public class TargetManagerImpl implements TargetManager {
         return specificTargets[elevatorId].getAll();
     }
 
-    private void swapTargets(Elevator elevator, int newTarget, boolean isSpecific) {
-        Integer oldTarget = elevator.getState().getTarget();
+    private void swapTargets(Elevator elevator, Target newTarget) {
+        Target oldTarget = elevator.getState().getTarget();
         int id = elevator.getState().getID();
-        int currentFloor = elevator.getState().getFloor();
 
         elevator.setTarget(newTarget);
-        toSpecificTarget[id] = isSpecific;
+        restoreTarget(id, oldTarget);
+    }
 
+    private void restoreTarget(int elevatorId, Target oldTarget) {
         if(oldTarget == null) {
             return;
         }
+        int targetFloor = oldTarget.getFloor();
 
-        if(toSpecificTarget[id]) {
-            specificTargets[id].add(oldTarget);
+        if(oldTarget.isSpecific()) {
+            specificTargets[elevatorId].add(targetFloor);
         }
-        else {
-            if(elevator.getDirection() == Direction.UP) {
-                generalTargetsUp.add(oldTarget);
-            }
-            else if(elevator.getDirection() == Direction.DOWN) {
-                generalTargetsDown.add(oldTarget);
-            }
+        if(oldTarget.isUp()) {
+            generalTargetsUp.add(targetFloor);
+        }
+        if(oldTarget.isDown()) {
+            generalTargetsDown.add(targetFloor);
         }
     }
 }

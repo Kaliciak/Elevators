@@ -3,10 +3,10 @@ package Model.ElevatorState;
 public class ElevatorStateImpl implements MutableElevatorState {
     private int id;
     private int floor;
-    private Integer target;
+    private Target target;
     private boolean openDoors = false;
 
-    public ElevatorStateImpl(int id, Integer floor, Integer target) {
+    public ElevatorStateImpl(int id, Integer floor, Target target) {
         this.id = id;
         this.floor = floor;
         this.target = target;
@@ -23,7 +23,7 @@ public class ElevatorStateImpl implements MutableElevatorState {
     }
 
     @Override
-    public Integer getTarget() {
+    public Target getTarget() {
         return target;
     }
 
@@ -38,7 +38,7 @@ public class ElevatorStateImpl implements MutableElevatorState {
     }
 
     @Override
-    public void setTarget(Integer target) {
+    public void setTarget(Target target) {
         this.target = target;
     }
 
