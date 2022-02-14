@@ -114,6 +114,7 @@ public class SimulationView {
         ElevatorState[] elevatorStates = viewModel.getElevatorStates();
 
         drawRequests();
+        drawTargets();
 
         for(int elevator = 0; elevator < elevatorsCount; elevator ++) {
             int floorIndex = elevatorStates[elevator].getFloor();
@@ -140,6 +141,18 @@ public class SimulationView {
 
     }
 
+    private void drawTargets() {
+        for(ElevatorState state: viewModel.getElevatorStates()) {
+            int id = state.getID();
+            Integer floor = state.getTarget();
+            if(floor == null) {
+                return;
+            }
+
+            elevatorCanvas[id][floor].fill(Color.RED);
+        }
+    }
+
     private void paintButton(IndexedButton button, List<Integer> requestList) {
         if(requestList.contains(button.id)) {
             button.setBackground(new Background(new BackgroundFill(Color.ORANGE, null, null)));
@@ -150,15 +163,11 @@ public class SimulationView {
     }
 
     private void paintCanvas(IndexedCanvas canvas, List<Integer> requestList) {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        double height = canvas.getHeight();
-        double width = canvas.getWidth();
         if(requestList.contains(canvas.floor)) {
-            gc.setFill(Color.ORANGE);
+            canvas.fill(Color.ORANGE);
         }
         else {
-            gc.setFill(Color.LIGHTGREEN);
+            canvas.fill(Color.LIGHTGREEN);
         }
-        gc.fillRect(0,0, width - 2, height - 2);
     }
 }
