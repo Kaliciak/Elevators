@@ -8,11 +8,13 @@ import View.IndexedCanvas;
 import View.Menu.MenuView;
 import ViewModel.Simulation.SimulationViewModel;
 import ViewModel.Simulation.SimulationViewModelImpl;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -35,12 +37,14 @@ public class SimulationView {
 
     @FXML
     private AnchorPane mainPane;
-
     @FXML
     private VBox floorsVBox;
-
     @FXML
     private HBox elevatorHBox;
+    @FXML
+    private ScrollPane floorsScrollPane;
+    @FXML
+    private ScrollPane elevatorsScrollPane;
 
     public void initialize(int elevatorsCount, int maxFloor, int minFloor) {
         this.elevatorsCount = elevatorsCount;
@@ -53,6 +57,10 @@ public class SimulationView {
 
         // TODO: inject class
         viewModel = new SimulationViewModelImpl(elevatorsCount, maxFloor, floorsCount);
+
+        synchroniseScrollPanes(floorsScrollPane, elevatorsScrollPane);
+        floorsScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        floorsScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         fillFloorsPane();
         fillElevatorsPane();
@@ -186,6 +194,10 @@ public class SimulationView {
         }
     }
 
+    private void synchroniseScrollPanes(ScrollPane first, ScrollPane second) {
+        first.vvalueProperty().addListener((observable, oldValue, newValue) -> second.setVvalue((Double) newValue));
+        second.vvalueProperty().addListener((observable, oldValue, newValue) -> first.setVvalue((Double) newValue));
+    }
 
     @FXML
     void goBack(ActionEvent event) {
@@ -193,7 +205,7 @@ public class SimulationView {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/fxml/Menu.fxml"));
             Parent root = loader.load();
             MenuView menuView = loader.getController();
-            menuView.initialize(elevatorsCount);
+            menuView.initialize(elevatorsCount, maxFloor, maxFloor - floorsCount + 1);
 
             mainPane.getScene().setRoot(root);
         } catch (Exception e) {

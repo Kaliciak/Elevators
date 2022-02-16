@@ -15,22 +15,16 @@ public class MenuView {
 
     @FXML
     private AnchorPane mainPane;
-
     @FXML
     private Slider elevatorCountSlider;
-
     @FXML
     private Text elevatorCountText;
-
     @FXML
     private Slider maxFloorSlider;
-
     @FXML
     private Slider minFloorSlider;
-
     @FXML
     private Text maxFloorText;
-
     @FXML
     private Text minFloorText;
 
@@ -44,9 +38,10 @@ public class MenuView {
         minFloorSlider.valueProperty().addListener(this::minFloorSliderListener);
     }
 
-    public void initialize(int elevatorCount) {
-        elevatorCountText.setText(Integer.toString(elevatorCount));
+    public void initialize(int elevatorCount, int maxFloor, int minFloor) {
         elevatorCountSlider.setValue(elevatorCount);
+        maxFloorSlider.setValue(maxFloor);
+        minFloorSlider.setValue(minFloor);
     }
 
     private void elevatorSliderListener(Observable observable, Number oldValue, Number newValue) {
