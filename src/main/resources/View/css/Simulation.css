@@ -1,0 +1,85 @@
+.root {
+    -fx-background-color: #001D29;
+}
+
+.text {
+    -fx-fill: #EBF9FF;
+}
+
+.button_ {
+    -fx-border-color: #004766;
+    -fx-border-width: 2 2 2 2;
+    -fx-background-color: #002b3d;
+}
+
+.button_:hover {
+    -fx-border-color: #47C8FF;
+    -fx-border-width: 2 2 2 2;
+    -fx-background-color: #004766;
+}
+
+.scroll-pane {
+    -fx-background: #001D29;
+}
+
+.scroll-bar:horizontal, .scroll-bar:vertical{
+    -fx-background-color: #002b3d;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #004766;
+}
+
+
+.floor_pane {
+    -fx-background-image: url("/View/png/FloorHBox.png");
+}
+
+.floor_pane_text {
+    -fx-fill: #47C8FF;
+}
+
+.floor_button_up {
+    -fx-background-image: url("/View/png/FloorButtonUp.png");
+    -fx-min-width: 37;
+    -fx-min-height: 22;
+    -fx-font-size: 1;
+}
+
+.floor_button_up:hover {
+    -fx-background-image: url("/View/png/FloorButtonUpHover.png");
+}
+
+.floor_button_down {
+    -fx-background-image: url("/View/png/FloorButtonDown.png");
+    -fx-min-width: 37;
+    -fx-min-height: 22;
+    -fx-font-size: 1;
+}
+
+.floor_button_down:hover {
+    -fx-background-image: url("/View/png/FloorButtonDownHover.png");
+}
+
+.floor_button_up_hold {
+    -fx-background-image: url("/View/png/FloorButtonUpHold.png");
+    -fx-min-width: 37;
+    -fx-min-height: 22;
+    -fx-font-size: 1;
+}
+
+.floor_button_up_hold:hover {
+    -fx-background-image: url("/View/png/FloorButtonUpHover.png");
+}
+
+.floor_button_down_hold {
+    -fx-background-image: url("/View/png/FloorButtonDownHold.png");
+    -fx-min-width: 37;
+    -fx-min-height: 22;
+    -fx-font-size: 1;
+}
+
+.floor_button_down_hold:hover {
+    -fx-background-image: url("/View/png/FloorButtonDownHover.png");
+}

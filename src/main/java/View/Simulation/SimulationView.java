@@ -8,10 +8,10 @@ import View.IndexedCanvas;
 import View.Menu.MenuView;
 import ViewModel.Simulation.SimulationViewModel;
 import ViewModel.Simulation.SimulationViewModelImpl;
-import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +35,11 @@ public class SimulationView {
     private IndexedButton[] buttonsUp;
     private IndexedButton[] buttonsDown;
     private IndexedCanvas[][] elevatorCanvas;
+
+    private final int elevatorHeight = 55;
+    private final int floorWidth = 99;
+    private final int fontSize = 12;
+    private final int floorTextWidth = 31;
 
     @FXML
     private AnchorPane mainPane;
@@ -93,27 +99,44 @@ public class SimulationView {
 
     private void fillFloorsPane() {
         for(int i = 0; i < floorsCount; i ++) {
-            HBox floorBox = new HBox();
+            Pane pane = new Pane();
+            pane.setMinHeight(elevatorHeight);
+            pane.setMinWidth(floorWidth);
+            pane.getStyleClass().add("floor_pane");
+            floorsVBox.getChildren().add(pane);
+
+            HBox textBox = new HBox();
+            textBox.setAlignment(Pos.CENTER_LEFT);
+            textBox.setMinWidth(floorWidth);
+            textBox.setMinHeight(elevatorHeight);
+            textBox.layoutYProperty().setValue(0);
+            textBox.layoutXProperty().setValue(5);
+            pane.getChildren().add(textBox);
 
             Text floorText = new Text(Integer.toString(maxFloor - i));
-            floorText.setFont(font(floorText.getFont().getFamily(), 12));
+            floorText.textAlignmentProperty().setValue(TextAlignment.CENTER);
+            floorText.setWrappingWidth(floorTextWidth);
+            floorText.setFont(font(floorText.getFont().getFamily(), fontSize));
+            floorText.getStyleClass().add("floor_pane_text");
             HBox.setHgrow(floorText, Priority.ALWAYS);
-            floorBox.getChildren().add(floorText);
+            textBox.getChildren().add(floorText);
 
-            IndexedButton upButton = new IndexedButton("UP", i);
+            IndexedButton upButton = new IndexedButton(i, Direction.UP);
             upButton.setOnAction(this::requestUp);
-            HBox.setHgrow(upButton, Priority.ALWAYS);
-            floorBox.getChildren().add(upButton);
+            upButton.getStyleClass().add("floor_button_up");
+            upButton.layoutXProperty().setValue(42);
+            upButton.layoutYProperty().setValue(6);
+            pane.getChildren().add(upButton);
 
-            IndexedButton downButton = new IndexedButton("DOWN", i);
+            IndexedButton downButton = new IndexedButton(i, Direction.DOWN);
             downButton.setOnAction(this::requestDown);
-            HBox.setHgrow(downButton, Priority.ALWAYS);
-            floorBox.getChildren().add(downButton);
+            downButton.getStyleClass().add("floor_button_down");
+            downButton.layoutXProperty().setValue(42);
+            downButton.layoutYProperty().setValue(26);
+            pane.getChildren().add(downButton);
 
             buttonsUp[i] = upButton;
             buttonsDown[i] = downButton;
-
-            floorsVBox.getChildren().add(floorBox);
         }
     }
 
@@ -177,11 +200,23 @@ public class SimulationView {
     }
 
     private void paintButton(IndexedButton button, List<Integer> requestList) {
+        button.getStyleClass().clear();
+        Direction direction = button.direction;
         if(requestList.contains(button.id)) {
-            button.setBackground(new Background(new BackgroundFill(Color.ORANGE, null, null)));
+            if(direction == Direction.UP) {
+                button.getStyleClass().add("floor_button_up_hold");
+            }
+            else if(direction == Direction.DOWN) {
+                button.getStyleClass().add("floor_button_down_hold");
+            }
         }
         else {
-            button.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, null, null)));
+            if(direction == Direction.UP) {
+                button.getStyleClass().add("floor_button_up");
+            }
+            else if(direction == Direction.DOWN) {
+                button.getStyleClass().add("floor_button_down");
+            }
         }
     }
 
