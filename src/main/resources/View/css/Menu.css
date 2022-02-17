@@ -1,0 +1,31 @@
+.root {
+    -fx-background-color: #001D29;
+}
+
+.text {
+    -fx-fill: #EBF9FF;
+}
+
+.button {
+    -fx-border-color: #004766;
+    -fx-border-width: 2 2 2 2;
+    -fx-background-color: #002b3d;
+}
+
+.button:hover {
+    -fx-border-color: #47C8FF;
+    -fx-border-width: 2 2 2 2;
+    -fx-background-color: #004766;
+}
+
+.slider .track {
+    -fx-background-color: #D6F3FF;
+}
+
+.slider .thumb {
+    -fx-background-color: #0072A3;
+}
+
+.slider .axis {
+    -fx-tick-label-fill: #EBF9FF;
+}

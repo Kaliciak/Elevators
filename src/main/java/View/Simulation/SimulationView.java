@@ -4,21 +4,20 @@ import Model.Direction;
 import Model.ElevatorState.ElevatorState;
 import Model.ElevatorState.Target;
 import View.IndexedButton;
-import View.IndexedCanvas;
+import View.ElevatorButton;
 import View.Menu.MenuView;
 import ViewModel.Simulation.SimulationViewModel;
 import ViewModel.Simulation.SimulationViewModelImpl;
-import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,12 @@ public class SimulationView {
     private int elevatorsCount;
     private IndexedButton[] buttonsUp;
     private IndexedButton[] buttonsDown;
-    private IndexedCanvas[][] elevatorCanvas;
+    private ElevatorButton[][] elevatorButtons;
+
+    private final int elevatorHeight = 55;
+    private final int floorWidth = 99;
+    private final int fontSize = 12;
+    private final int floorTextWidth = 31;
 
     @FXML
     private AnchorPane mainPane;
@@ -53,9 +57,8 @@ public class SimulationView {
 
         buttonsUp = new IndexedButton[floorsCount];
         buttonsDown = new IndexedButton[floorsCount];
-        elevatorCanvas = new IndexedCanvas[elevatorsCount][floorsCount];
+        elevatorButtons = new ElevatorButton[elevatorsCount][floorsCount];
 
-        // TODO: inject class
         viewModel = new SimulationViewModelImpl(elevatorsCount, maxFloor, floorsCount);
 
         synchroniseScrollPanes(floorsScrollPane, elevatorsScrollPane);
@@ -86,34 +89,49 @@ public class SimulationView {
     }
 
     private void specificRequest(MouseEvent event) {
-        IndexedCanvas canvas = (IndexedCanvas) event.getTarget();
-        viewModel.pressedElevatorCanvas(canvas.elevator, canvas.floor);
+        ElevatorButton elevatorButton = (ElevatorButton) event.getTarget();
+        viewModel.pressedElevatorCanvas(elevatorButton.elevator, elevatorButton.floor);
         redraw();
     }
 
     private void fillFloorsPane() {
         for(int i = 0; i < floorsCount; i ++) {
-            HBox floorBox = new HBox();
+            Pane pane = new Pane();
+            pane.getStyleClass().add("floor_pane");
+            floorsVBox.getChildren().add(pane);
+
+            HBox textBox = new HBox();
+            textBox.setAlignment(Pos.CENTER_LEFT);
+            textBox.setMinWidth(floorWidth);
+            textBox.setMinHeight(elevatorHeight);
+            textBox.layoutYProperty().setValue(0);
+            textBox.layoutXProperty().setValue(5);
+            pane.getChildren().add(textBox);
 
             Text floorText = new Text(Integer.toString(maxFloor - i));
-            floorText.setFont(font(floorText.getFont().getFamily(), 12));
+            floorText.textAlignmentProperty().setValue(TextAlignment.CENTER);
+            floorText.setWrappingWidth(floorTextWidth);
+            floorText.setFont(font(floorText.getFont().getFamily(), fontSize));
+            floorText.getStyleClass().add("floor_pane_text");
             HBox.setHgrow(floorText, Priority.ALWAYS);
-            floorBox.getChildren().add(floorText);
+            textBox.getChildren().add(floorText);
 
-            IndexedButton upButton = new IndexedButton("UP", i);
+            IndexedButton upButton = new IndexedButton(i, Direction.UP);
             upButton.setOnAction(this::requestUp);
-            HBox.setHgrow(upButton, Priority.ALWAYS);
-            floorBox.getChildren().add(upButton);
+            upButton.getStyleClass().add("floor_button_up");
+            upButton.layoutXProperty().setValue(42);
+            upButton.layoutYProperty().setValue(6);
+            pane.getChildren().add(upButton);
 
-            IndexedButton downButton = new IndexedButton("DOWN", i);
+            IndexedButton downButton = new IndexedButton(i, Direction.DOWN);
             downButton.setOnAction(this::requestDown);
-            HBox.setHgrow(downButton, Priority.ALWAYS);
-            floorBox.getChildren().add(downButton);
+            downButton.getStyleClass().add("floor_button_down");
+            downButton.layoutXProperty().setValue(42);
+            downButton.layoutYProperty().setValue(26);
+            pane.getChildren().add(downButton);
 
             buttonsUp[i] = upButton;
             buttonsDown[i] = downButton;
-
-            floorsVBox.getChildren().add(floorBox);
         }
     }
 
@@ -122,10 +140,10 @@ public class SimulationView {
             VBox newBox = new VBox();
 
             for(int floor = 0; floor < floorsCount; floor ++) {
-                elevatorCanvas[elevator][floor] = new IndexedCanvas(40, 55, elevator, floor);
-                elevatorCanvas[elevator][floor].setOnMouseClicked(this::specificRequest);
-                VBox.setVgrow(elevatorCanvas[elevator][floor], Priority.ALWAYS);
-                newBox.getChildren().add(elevatorCanvas[elevator][floor]);
+                elevatorButtons[elevator][floor] = new ElevatorButton(elevator, floor);
+                elevatorButtons[elevator][floor].setOnMouseClicked(this::specificRequest);
+                VBox.setVgrow(elevatorButtons[elevator][floor], Priority.ALWAYS);
+                newBox.getChildren().add(elevatorButtons[elevator][floor]);
             }
 
             HBox.setHgrow(newBox, Priority.ALWAYS);
@@ -134,16 +152,19 @@ public class SimulationView {
     }
 
     private void redraw() {
-        ElevatorState[] elevatorStates = viewModel.getElevatorStates();
-
+        drawShafts();
         drawRequests();
         drawTargets();
+        drawElevators();
 
+        mainPane.requestFocus();
+    }
+
+    private void drawShafts() {
         for(int elevator = 0; elevator < elevatorsCount; elevator ++) {
-            int floorIndex = elevatorStates[elevator].getFloor();
-            GraphicsContext gc = elevatorCanvas[elevator][floorIndex].getGraphicsContext2D();
-            gc.setFill(Color.BLACK);
-            gc.fillOval(10, 10, 10, 10);
+            for(int floor = 0; floor < floorsCount; floor ++) {
+                elevatorButtons[elevator][floor].setStyleClass("elevator_shaft");
+            }
         }
     }
 
@@ -157,11 +178,10 @@ public class SimulationView {
         Arrays.stream(buttonsDown).forEach((button) -> paintButton(button, downRequests));
 
         // specific
-        for(IndexedCanvas[] elevatorArr: elevatorCanvas) {
+        for(ElevatorButton[] elevatorArr: elevatorButtons) {
             List<Integer> elevatorRequests = viewModel.getSpecificTargets(elevatorArr[0].elevator);
-            Arrays.stream(elevatorArr).forEach((canvas) -> paintCanvas(canvas, elevatorRequests));
+            Arrays.stream(elevatorArr).forEach((canvas) -> paintElevatorButton(canvas, elevatorRequests));
         }
-
     }
 
     private void drawTargets() {
@@ -172,25 +192,49 @@ public class SimulationView {
                 continue;
             }
 
-            elevatorCanvas[id][target.getFloor()].fill(Color.RED);
+            elevatorButtons[id][target.getFloor()].setStyleClass("elevator_shaft_target");
+        }
+    }
+
+    private void drawElevators() {
+        ElevatorState[] elevatorStates = viewModel.getElevatorStates();
+
+        for(int elevator = 0; elevator < elevatorsCount; elevator ++) {
+            int floorIndex = elevatorStates[elevator].getFloor();
+            ElevatorButton elevatorButton = elevatorButtons[elevator][floorIndex];
+            if(elevatorStates[elevator].isDoorOpen()) {
+                elevatorButton.setStyleClass("elevator_open");
+            }
+            else {
+                elevatorButton.setStyleClass("elevator_closed");
+            }
         }
     }
 
     private void paintButton(IndexedButton button, List<Integer> requestList) {
+        button.getStyleClass().clear();
+        Direction direction = button.direction;
         if(requestList.contains(button.id)) {
-            button.setBackground(new Background(new BackgroundFill(Color.ORANGE, null, null)));
+            if(direction == Direction.UP) {
+                button.getStyleClass().add("floor_button_up_hold");
+            }
+            else if(direction == Direction.DOWN) {
+                button.getStyleClass().add("floor_button_down_hold");
+            }
         }
         else {
-            button.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, null, null)));
+            if(direction == Direction.UP) {
+                button.getStyleClass().add("floor_button_up");
+            }
+            else if(direction == Direction.DOWN) {
+                button.getStyleClass().add("floor_button_down");
+            }
         }
     }
 
-    private void paintCanvas(IndexedCanvas canvas, List<Integer> requestList) {
-        if(requestList.contains(canvas.floor)) {
-            canvas.fill(Color.ORANGE);
-        }
-        else {
-            canvas.fill(Color.LIGHTGREEN);
+    private void paintElevatorButton(ElevatorButton elevatorButton, List<Integer> requestList) {
+        if(requestList.contains(elevatorButton.floor)) {
+            elevatorButton.setStyleClass("elevator_shaft_request");
         }
     }
 

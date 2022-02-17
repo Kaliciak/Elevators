@@ -21,7 +21,6 @@ public class TargetManagerImpl implements TargetManager {
         this.elevators = elevators;
         int elevatorsCount = elevators.length;
 
-        //TODO: use fabric
         specificTargets = new TargetListImpl[elevatorsCount];
         for(int i = 0; i < elevatorsCount; i ++) {
             specificTargets[i] = new TargetListImpl();
@@ -207,7 +206,7 @@ public class TargetManagerImpl implements TargetManager {
             elevator.setTarget(new TargetImpl(floor, true, false, false));
         }
         else if(targetFloor == currentFloor) {
-            elevator.setTarget(new TargetImpl(floor, true, false, false));;
+            elevator.setTarget(new TargetImpl(floor, true, false, false));
         }
         // if target <- new <- floor
         // if floor -> new -> target
