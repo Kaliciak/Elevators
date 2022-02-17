@@ -26,6 +26,6 @@
             <HBox fx:id="elevatorHBox" prefHeight="446.0" prefWidth="10.0" />
          </content>
       </ScrollPane>
-      <Button layoutX="35.0" layoutY="19.0" mnemonicParsing="false" onAction="#goBack" prefHeight="26.0" prefWidth="46.0" styleClass="button_" text="Back" />
+      <Button layoutX="28.0" layoutY="19.0" mnemonicParsing="false" onAction="#goBack" prefHeight="30.0" prefWidth="90.0" styleClass="button_" text="Back" />
    </children>
 </AnchorPane>
