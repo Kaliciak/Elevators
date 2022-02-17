@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SimulationViewModelImpl implements SimulationViewModel {
-    // TODO: injection
     private ElevatorSystem elevatorSystem;
     private int maxFloor;
 
@@ -46,7 +45,6 @@ public class SimulationViewModelImpl implements SimulationViewModel {
         elevatorSystem.specificRequest(getFloorIndex(floor), elevator);
     }
 
-    //TODO: translate floor number to floor id
     @Override
     public List<Integer> getGeneralTargets(Direction direction) {
         return elevatorSystem.getGeneralTargets(direction).stream().map(this::getFloorIndex).collect(Collectors.toList());
@@ -67,6 +65,6 @@ public class SimulationViewModelImpl implements SimulationViewModel {
         if(oldTarget != null) {
             newTarget = new TargetImpl(getFloorIndex(oldTarget.getFloor()), oldTarget.isSpecific(), oldTarget.isUp(), oldTarget.isDown());
         }
-        return new ElevatorStateImpl(state.getID(), getFloorIndex(state.getFloor()), newTarget);
+        return new ElevatorStateImpl(state.getID(), getFloorIndex(state.getFloor()), newTarget, state.isDoorOpen());
     }
 }

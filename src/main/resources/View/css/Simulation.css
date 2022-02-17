@@ -34,6 +34,8 @@
 
 .floor_pane {
     -fx-background-image: url("/View/png/FloorHBox.png");
+    -fx-min-width: 99;
+    -fx-min-height: 55;
 }
 
 .floor_pane_text {
@@ -82,4 +84,56 @@
 
 .floor_button_down_hold:hover {
     -fx-background-image: url("/View/png/FloorButtonDownHover.png");
+}
+
+.elevator_shaft {
+    -fx-background-image: url("/View/png/ElevatorShaft.png");
+    -fx-min-width: 40;
+    -fx-min-height: 55;
+}
+
+.elevator_shaft:hover {
+    -fx-background-image: url("/View/png/ElevatorShaftHover.png");
+}
+
+.elevator_shaft_request {
+    -fx-background-image: url("/View/png/ElevatorShaftRequest.png");
+    -fx-min-width: 40;
+    -fx-min-height: 55;
+}
+
+.elevator_shaft_request:hover {
+    -fx-background-image: url("/View/png/ElevatorShaftRequestHover.png");
+}
+
+.elevator_shaft_target {
+    -fx-background-image: url("/View/png/ElevatorShaftTarget.png");
+    -fx-min-width: 40;
+    -fx-min-height: 55;
+}
+
+.elevator_shaft_target:hover {
+    -fx-background-image: url("/View/png/ElevatorShaftTargetHover.png");
+}
+
+.elevator_open {
+    -fx-background-image: url("/View/png/ElevatorOpen.png");
+    -fx-min-width: 40;
+    -fx-min-height: 55;
+}
+
+.elevator_open:hover {
+    -fx-background-image: url("/View/png/ElevatorOpenHover.png");
+    -fx-min-width: 40;
+    -fx-min-height: 55;
+}
+
+.elevator_closed {
+    -fx-background-image: url("/View/png/ElevatorClosed.png");
+    -fx-min-width: 40;
+    -fx-min-height: 55;
+}
+
+.elevator_closed:hover {
+    -fx-background-image: url("/View/png/ElevatorClosedHover.png");
 }

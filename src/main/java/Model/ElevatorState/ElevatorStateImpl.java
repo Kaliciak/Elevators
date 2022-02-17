@@ -4,12 +4,17 @@ public class ElevatorStateImpl implements MutableElevatorState {
     private int id;
     private int floor;
     private Target target;
-    private boolean openDoors = false;
+    private boolean openDoors;
 
-    public ElevatorStateImpl(int id, Integer floor, Target target) {
+    public ElevatorStateImpl(int id, Integer floor, Target target, boolean openDoors) {
         this.id = id;
         this.floor = floor;
         this.target = target;
+        this.openDoors = openDoors;
+    }
+
+    public ElevatorStateImpl(int id, Integer floor, Target target) {
+        this(id, floor, target, false);
     }
 
     @Override
