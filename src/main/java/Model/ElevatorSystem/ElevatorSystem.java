@@ -12,4 +12,5 @@ public interface ElevatorSystem {
     void step();
     List<Integer> getGeneralTargets(Direction direction);
     List<Integer> getSpecificTargets(int elevatorId);
+    void changeElevatorStop(int index);
 }

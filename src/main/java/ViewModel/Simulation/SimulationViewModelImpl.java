@@ -67,4 +67,8 @@ public class SimulationViewModelImpl implements SimulationViewModel {
         }
         return new ElevatorStateImpl(state.getID(), getFloorIndex(state.getFloor()), newTarget, state.isDoorOpen());
     }
+
+    public void pressedElevatorStop(int index) {
+        elevatorSystem.changeElevatorStop(index);
+    }
 }

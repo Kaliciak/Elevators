@@ -48,6 +48,11 @@ public class ElevatorSystemImpl implements ElevatorSystem {
     }
 
     @Override
+    public void changeElevatorStop(int index) {
+        targetManager.changeElevatorStop(index);
+    }
+
+    @Override
     public void generalRequest(int floor, Direction direction) {
         targetManager.generalRequest(floor, direction);
     }
@@ -56,4 +61,6 @@ public class ElevatorSystemImpl implements ElevatorSystem {
     public void specificRequest(int floor, int elevatorID) {
         targetManager.specificRequest(floor, elevatorID);
     }
+
+
 }

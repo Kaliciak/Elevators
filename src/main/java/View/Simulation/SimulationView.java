@@ -6,6 +6,7 @@ import Model.ElevatorState.Target;
 import View.IndexedButton;
 import View.ElevatorButton;
 import View.Menu.MenuView;
+import View.StopButton;
 import ViewModel.Simulation.SimulationViewModel;
 import ViewModel.Simulation.SimulationViewModelImpl;
 import javafx.event.ActionEvent;
@@ -13,9 +14,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -46,6 +49,8 @@ public class SimulationView {
     @FXML
     private HBox elevatorHBox;
     @FXML
+    private HBox stopHBox;
+    @FXML
     private ScrollPane floorsScrollPane;
     @FXML
     private ScrollPane elevatorsScrollPane;
@@ -67,6 +72,7 @@ public class SimulationView {
 
         fillFloorsPane();
         fillElevatorsPane();
+        fillStopHBox();
         redraw();
     }
 
@@ -255,5 +261,21 @@ public class SimulationView {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    void fillStopHBox() {
+        for(int i = 0; i < elevatorsCount; i ++) {
+            Button button = new StopButton(i + "", i);
+            button.getStyleClass().add("button_");
+            button.setOnMouseClicked(this::pressedStopButton);
+            HBox.setHgrow(button, Priority.ALWAYS);
+            stopHBox.getChildren().add(button);
+        }
+    }
+
+    void pressedStopButton(MouseEvent event) {
+        StopButton button = (StopButton) event.getTarget();
+        viewModel.pressedElevatorStop(button.index);
+        redraw();
     }
 }

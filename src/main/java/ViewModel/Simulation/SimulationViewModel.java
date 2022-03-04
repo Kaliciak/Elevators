@@ -12,4 +12,5 @@ public interface SimulationViewModel {
     void pressedElevatorCanvas(int elevator, int floor);
     List<Integer> getGeneralTargets(Direction direction);
     List<Integer> getSpecificTargets(int elevatorId);
+    void pressedElevatorStop(int index);
 }

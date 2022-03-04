@@ -16,14 +16,17 @@ public class TargetManagerImpl implements TargetManager {
     private TargetList[] specificTargets;
     private TargetList generalTargetsUp;
     private TargetList generalTargetsDown;
+    private boolean[] stopped;
 
     public TargetManagerImpl(Elevator[] elevators) {
         this.elevators = elevators;
         int elevatorsCount = elevators.length;
 
         specificTargets = new TargetListImpl[elevatorsCount];
+        stopped = new boolean[elevatorsCount];
         for(int i = 0; i < elevatorsCount; i ++) {
             specificTargets[i] = new TargetListImpl();
+            stopped[i] = false;
         }
         generalTargetsUp = new TargetListImpl();
         generalTargetsDown = new TargetListImpl();
@@ -33,7 +36,9 @@ public class TargetManagerImpl implements TargetManager {
     public void achievedTarget(int id) {
         Elevator elevator = elevators[id];
         Direction direction = elevator.getDirection();
-        Target oldTarget = elevator.getState().getTarget();
+        if(direction == Direction.NONE) {
+            direction = Direction.UP;
+        }
 
         Target closestTarget = getClosestTarget(elevator, direction);
         if(closestTarget != null) {
@@ -129,6 +134,7 @@ public class TargetManagerImpl implements TargetManager {
     @Override
     public void generalRequest(int floor, Direction direction) {
         Optional<Elevator> optionalElevator = Arrays.stream(elevators).
+                filter((this::stoppedFilter)).
                 filter((elevator) -> directionFilter(elevator, direction, floor)).
                 min((eA, eB) -> distanceComparator(eA, eB, floor));
 
@@ -146,6 +152,10 @@ public class TargetManagerImpl implements TargetManager {
             Elevator elevator = optionalElevator.get();
             swapTargets(elevator, new TargetImpl(floor, false, direction == Direction.UP, direction == Direction.DOWN));
         }
+    }
+
+    private boolean stoppedFilter(Elevator elevator) {
+        return !stopped[elevator.getState().getID()];
     }
 
     private static boolean directionFilter(Elevator elevator, Direction direction, int target) {
@@ -257,6 +267,16 @@ public class TargetManagerImpl implements TargetManager {
         }
         if(oldTarget.isDown()) {
             generalTargetsDown.add(targetFloor);
+        }
+    }
+
+    public void changeElevatorStop(int index) {
+        stopped[index] = !stopped[index];
+        if(stopped[index]) {
+            swapTargets(elevators[index], null);
+        }
+        else {
+            achievedTarget(index);
         }
     }
 }
